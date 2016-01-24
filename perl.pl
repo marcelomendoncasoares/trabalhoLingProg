@@ -20,12 +20,8 @@
 #
 
 use warnings;
-use Time::Local;
-
-# Declaração das constantes referentes à formatação das mensagens do whatsapp
-
-use constant NUMERO_CARACTERES_DATA_HORA = 17;
-use constant NOME_POSICAO_PRIMEIRA_LETRA = 20;
+use 5.010; # Para habilitar a função usada da biblioteca Time::Piece
+use Time::Piece;
 
 # Declaração das variáveis globais que serão utilizadas para o cálculo das saídas do programa
 # Cada array guarda uma variável para cada interlocutor
@@ -41,17 +37,25 @@ $interlocutor2 = "";
 # Pega o nome do arquivo como argumento passado ao programa em Perl
 $nomeArquivo = $ARGV[0];
 
-open(arquivo, "<", nomeArquivo) or die "Couldn't open file , $!";
+# Constante utilizada na formatação da hora para calcular a diferença
+$format = '%d/%m/%Y, %H:%M ';
 
-# Processa o arquivo linha a linha (cada linha corresponde a uma mensagem)
-# 
-# Precisa pegar a data/hora da mensagem e o interlocutor, mantendo registrados também a data/hora e interlocutor da 
-# mensagem anterior também fiquem armazenados até a leitura da próxima
-#
+open(arquivo, "<", $nomeArquivo) or die "Couldn't open file , $!";
+
+# Processa o arquivo linha a linha, sabendo que cada linha corresponde a uma mensagem
 while (my @linha = arquivo) {
 
+	# ============================== DECLARAÇÃO DAS VARIÁVEIS DA MENSAGEM ATUAL =====================================
+
 	# Separa a linha em duas partes, sendo uma a que contém a data em texto, e outra contendo o restante
-	my ($dataMsgAtualTexto, $resto) = split(/[-]+/, $linha);
+	my ($dataMsgAtual, $resto) = split(/[-]+/, $linha);
+
+	# Inicializa a dataMsgAnterior para o caso da primeira mensagem
+	if (!$dataMsgAnterior) {
+		$dataMsgAnterior = $dataMsgAtual;
+	}
+
+	# Separa o resto da linha em nome do interlocutor atual e mensagem
 	my ($interlocutorAtual, $msgAtual) = split(/[:]/, $resto);
 
 	# Remove o primeiro caracter (espaço) das strings
@@ -59,23 +63,38 @@ while (my @linha = arquivo) {
 	$msgAtual =~ s/.//;
 
 	# Declara o interlocutor1 e interlocutor2 se não estiverem declarados ainda 
-	if (!interlocutor1) {
-		$interlocutor1 = interlocutorAtual;
+	if (!$interlocutor1) {
+		$interlocutor1 = $interlocutorAtual;
 		$qtdVezesIniciouConversa[0]++;
 	}
-	elsif (!interlocutor2){
-		$interlocutor2 = interlocutorAtual;
+	elsif (!$interlocutor2){
+		$interlocutor2 = $interlocutorAtual;
 	}
 
-	# Pega a data e hora da mensagem, separa cada pedaço da data e hora e os converte para 'timestamp'
-	my ($mday, $mon, $year, $hour, $min) = split(/[\s\/,:]+/, $dataMsgAtualTexto);
-	$dataMsgAtual = timelocal(0, $min, $hour, $mday, $mon-1, $year);
+	# Define qual o interlocutor atual para o caso de ambos já haverem sido declarados
+	if ($interlocutorAtual == $interlocutor1) {
+		$indice = 0;
+	}
+	else {
+		$indice = 1;	
+	}
+
+	# ========================== FIM DA DECLARAÇÃO DAS VARIÁVEIS DA MENSAGEM ATUAL ==================================
+
+	# Verificação de diferença de data para incrementar quem começa a nova conversa
+	my $diferencaDataEmHoras = (Time::Piece->strptime($dataMsgAtual, $format) - Time::Piece->strptime($dataMsgAnterior, $format))/3600;
+	
+	if ($diferencaDataEmHoras > 24) {
+		$qtdVezesIniciouConversa[$indice]++;
+	}
+
+	# Conta a quantidade de palavras na mensagem e incrementa no contador do interlocutorAtual
+	my @msgAtualArrayPalavras = split(/[\s]+/, $msgAtual);
+	$qtdPalavras[$indice] += scalar(@msgAtualArrayPalavras);
 
 	
 	# Precisa adicionar:
 	#
-	# Uma verificação de diferença de tempo das datas para contar a quantidade de vezes que cada um inicia a conversa
-	# Contador de palavras por interlocutor (com split por // e length do array resultante)
 	# Contador de mensagens por interlocutor
 	# Contador de blocos de mensagens ininterruptos (conta +1 para o interlocutor atual sempre que mudar para o outro)
 	# Contador de emoticon por interlocutor (como identificar um emoticon?)
