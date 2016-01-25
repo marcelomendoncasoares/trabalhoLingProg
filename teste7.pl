@@ -18,8 +18,9 @@ $msgAtual =~ s/.//;
 # - Emoticons: 1F600 - 1F64F [http://www.fileformat.info/info/unicode/block/emoticons/index.htm]
 
 # Consegue remover todos os caracteres de texto, deixando os emoticons, mas ainda deixando os caracteres com acento
+# A expressão abaixo é quase como $msgAtual =~ s/[\w]+//g, exceto que também tira ':' e '-' 
 $msgAtual =~ s/[^\s\x{0080}-\x{00FF}]+//g;
-$msgAtual =~ s/[\x{0080}-\x{008A}]+//;
+#$msgAtual =~ s/[\x{0080}-\x{008A}]+//;
 
 
 my @arrayPalavras = split(/[\s]+/, $msgAtual);

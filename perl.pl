@@ -45,6 +45,14 @@ open(my $arquivo, "<", $nomeArquivo) or die "Couldn't open file , $!";
 # Processa o arquivo linha a linha, sabendo que cada linha corresponde a uma mensagem
 while (my $linha = <$arquivo>) {
 
+	# Remove newLine character
+	chomp($linha);
+
+	# Pula linhas vazias para evitar erros
+	$linha =~ /^$/ and next;
+
+	# VERIFICA SE A LINHA COMEÇA COM DATA. SE NÃO COMEÇA, SOMA A QUANTIDADE DE PALAVRAS AO INTERLOCUTOR ANTERIOR
+
 	# ============================== DECLARAÇÃO DAS VARIÁVEIS DA MENSAGEM ATUAL =====================================
 
 	# Separa a linha em duas partes, sendo uma a que contém a data em texto, e outra contendo o restante
@@ -110,7 +118,8 @@ while (my $linha = <$arquivo>) {
 }
 	my $media1 = $qtdMsg[0]/$qtdBlocosMsg[0];
 	my $media2 = $qtdMsg[1]/$qtdBlocosMsg[1];
- 	print"$interlocutor1: iniciou - $qtdVezesIniciouConversa[0]\n  qtdmsg - $qtdMsg[0]\n qtdpalavras - $qtdPalavras[0]\n blocos - $qtdBlocosMsg[0]\n";
- 	print"media mensagens/bloco $media1\n"; 
- 	print"$interlocutor2: iniciou - $qtdVezesIniciouConversa[1]\n  qtdmsg - $qtdMsg[1]\n qtdpalavras - $qtdPalavras[1]\n palavrasbloco - $qtdBlocosMsg[1]\n";
- 	print"media mensagens/bloco $media2\n";
+ 	
+ 	print"\n $interlocutor1:\n\tiniciou: $qtdVezesIniciouConversa[0]\n\tqtdmsg: $qtdMsg[0]\n\tqtdpalavras: $qtdPalavras[0]\n\tqtdblocos: $qtdBlocosMsg[0]\n";
+ 	say sprintf(" Media de mensagens/bloco = %.1f\n", $media1);
+ 	print" $interlocutor2:\n\tiniciou: $qtdVezesIniciouConversa[1]\n\tqtdmsg: $qtdMsg[1]\n\tqtdpalavras: $qtdPalavras[1]\n\tqtdblocos: $qtdBlocosMsg[1]\n";
+	say sprintf(" Media de mensagens/bloco = %.1f\n", $media2);
