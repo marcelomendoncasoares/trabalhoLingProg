@@ -16,7 +16,6 @@
 # 
 # Premissa 1: Será considerado nova conversa quando a diferença entre as mensagens for superior ou igual a 24h
 # Premissa 2: 
-# 
 #
 
 use warnings;
@@ -31,7 +30,7 @@ $interlocutor2 = "";
 @qtdPalavras = (0, 0);
 @qtdEmoticons = (0, 0);
 @qtdMsg = (0, 0);
-@qtdVezesFalou = (0, 0); # Blocos de mensagens ininterruptos
+@qtdBlocosMsg = (0, 0); # Blocos de mensagens ininterruptos
 @qtdVezesIniciouConversa = (0, 0);
 
 # Pega o nome do arquivo como argumento passado ao programa em Perl
@@ -62,10 +61,11 @@ while (my @linha = arquivo) {
 	$interlocutorAtual =~ s/.//;
 	$msgAtual =~ s/.//;
 
-	# Declara o interlocutor1 e interlocutor2 se não estiverem declarados ainda 
+	# Declara o interlocutor1 e interlocutor2 se não estiverem declarados ainda, colocando o anterior como sendo o próprio atual
 	if (!$interlocutor1) {
 		$interlocutor1 = $interlocutorAtual;
 		$qtdVezesIniciouConversa[0]++;
+		$indiceAnterior = 0; # Valor do índice para o interlocutor1
 	}
 	elsif (!$interlocutor2){
 		$interlocutor2 = $interlocutorAtual;
@@ -88,18 +88,22 @@ while (my @linha = arquivo) {
 		$qtdVezesIniciouConversa[$indice]++;
 	}
 
+	# Incrementa a quantidade de mensagens para o interlocutorAtual
+	$qtdMsg[$indice]++;
+
 	# Conta a quantidade de palavras na mensagem e incrementa no contador do interlocutorAtual
 	my @msgAtualArrayPalavras = split(/[\s]+/, $msgAtual);
 	$qtdPalavras[$indice] += scalar(@msgAtualArrayPalavras);
 
-	
-	# Precisa adicionar:
-	#
-	# Contador de mensagens por interlocutor
-	# Contador de blocos de mensagens ininterruptos (conta +1 para o interlocutor atual sempre que mudar para o outro)
-	# Contador de emoticon por interlocutor (como identificar um emoticon?)
-	#
+	# Contador de blocos de mensagens ininterruptos (conta +1 para o interlocutor anterior sempre que mudar de interlocutor)
+	if ($indice != $indiceAnterior) {
+		$qtdBlocosMsg[$indiceAnterior]++;
+	}
+
+	# Contador de emoticon por interlocutor, que precisa identificar emoticons tipo EMOJI e escritos usando ':', ';', ')', etc
+ 
 
 
+	$indiceAnterior = $indice;
 	$dataMsgAnterior = $dataMsgAtual;
 }
