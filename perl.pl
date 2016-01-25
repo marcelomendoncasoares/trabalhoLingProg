@@ -47,7 +47,7 @@ while (my @linha = arquivo) {
 	# ============================== DECLARAÇÃO DAS VARIÁVEIS DA MENSAGEM ATUAL =====================================
 
 	# Separa a linha em duas partes, sendo uma a que contém a data em texto, e outra contendo o restante
-	my ($dataMsgAtual, $resto) = split(/[-]+/, $linha);
+	my ($dataMsgAtual, $resto) = split(/[-](.*)/, $linha);
 
 	# Inicializa a dataMsgAnterior para o caso da primeira mensagem
 	if (!$dataMsgAnterior) {
@@ -55,7 +55,7 @@ while (my @linha = arquivo) {
 	}
 
 	# Separa o resto da linha em nome do interlocutor atual e mensagem
-	my ($interlocutorAtual, $msgAtual) = split(/[:]/, $resto);
+	my ($interlocutorAtual, $msgAtual) = split(/[:](.*)/, $resto);
 
 	# Remove o primeiro caracter (espaço) das strings
 	$interlocutorAtual =~ s/.//;
