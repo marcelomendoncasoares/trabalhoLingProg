@@ -14,7 +14,7 @@
 # Quantidade total de mensagens trocadas na conversa;
 # Quantidade total de palavras escritas
 # 
-# Premissa 1: Será considerado nova conversa quando a diferença entre as mensagens for superior ou igual a 24h
+
 # Premissa 2: 
 #
 
@@ -25,6 +25,8 @@ use Time::Piece;
 # Declaração das variáveis globais que serão utilizadas para o cálculo das saídas do programa
 # Cada array guarda uma variável para cada interlocutor
 
+$HORAS_MIN = 10; # Número de horas para ser considerado uma nova conversa 
+
 $interlocutor1 = "";
 $interlocutor2 = "";
 @qtdPalavras = (0, 0);
@@ -32,22 +34,21 @@ $interlocutor2 = "";
 @qtdMsg = (0, 0);
 @qtdBlocosMsg = (0, 0); # Blocos de mensagens ininterruptos
 @qtdVezesIniciouConversa = (0, 0);
-
 # Pega o nome do arquivo como argumento passado ao programa em Perl
 $nomeArquivo = $ARGV[0];
 
 # Constante utilizada na formatação da hora para calcular a diferença
-$format = '%d/%m/%Y, %H:%M ';
+$format = '%m/%d/%Y, %H:%M ';
 
-open(arquivo, "<", $nomeArquivo) or die "Couldn't open file , $!";
+open(my $arquivo, "<", $nomeArquivo) or die "Couldn't open file , $!";
 
 # Processa o arquivo linha a linha, sabendo que cada linha corresponde a uma mensagem
-while (my @linha = arquivo) {
+while (my $linha = <$arquivo>) {
 
 	# ============================== DECLARAÇÃO DAS VARIÁVEIS DA MENSAGEM ATUAL =====================================
 
 	# Separa a linha em duas partes, sendo uma a que contém a data em texto, e outra contendo o restante
-	my ($dataMsgAtual, $resto) = split(/[-](.*)/, $linha);
+	my ($dataMsgAtual, $resto) = split /[-](.*)/, $linha;
 
 	# Inicializa a dataMsgAnterior para o caso da primeira mensagem
 	if (!$dataMsgAnterior) {
@@ -55,7 +56,7 @@ while (my @linha = arquivo) {
 	}
 
 	# Separa o resto da linha em nome do interlocutor atual e mensagem
-	my ($interlocutorAtual, $msgAtual) = split(/[:](.*)/, $resto);
+	my ($interlocutorAtual, $msgAtual) = split /[:](.*)/, $resto;
 
 	# Remove o primeiro caracter (espaço) das strings
 	$interlocutorAtual =~ s/.//;
@@ -67,12 +68,12 @@ while (my @linha = arquivo) {
 		$qtdVezesIniciouConversa[0]++;
 		$indiceAnterior = 0; # Valor do índice para o interlocutor1
 	}
-	elsif (!$interlocutor2){
+	elsif (!$interlocutor2 && ($interlocutorAtual ne $interlocutor1)){
 		$interlocutor2 = $interlocutorAtual;
 	}
 
 	# Define qual o interlocutor atual para o caso de ambos já haverem sido declarados
-	if ($interlocutorAtual == $interlocutor1) {
+	if ($interlocutorAtual eq $interlocutor1) {
 		$indice = 0;
 	}
 	else {
@@ -84,7 +85,7 @@ while (my @linha = arquivo) {
 	# Verificação de diferença de data para incrementar quem começa a nova conversa
 	my $diferencaDataEmHoras = (Time::Piece->strptime($dataMsgAtual, $format) - Time::Piece->strptime($dataMsgAnterior, $format))/3600;
 	
-	if ($diferencaDataEmHoras > 24) {
+	if ($diferencaDataEmHoras > $HORAS_MIN) {
 		$qtdVezesIniciouConversa[$indice]++;
 	}
 
@@ -92,18 +93,24 @@ while (my @linha = arquivo) {
 	$qtdMsg[$indice]++;
 
 	# Conta a quantidade de palavras na mensagem e incrementa no contador do interlocutorAtual
-	my @msgAtualArrayPalavras = split(/[\s]+/, $msgAtual);
+	my @msgAtualArrayPalavras = split /[\s]+/, $msgAtual;
 	$qtdPalavras[$indice] += scalar(@msgAtualArrayPalavras);
 
-	# Contador de blocos de mensagens ininterruptos (conta +1 para o interlocutor anterior sempre que mudar de interlocutor)
+	# Contador de blocos de mensagens ininterruptos (conta +1 para o interlocutor anterior sempre que mudar de interlocutor)	
 	if ($indice != $indiceAnterior) {
 		$qtdBlocosMsg[$indiceAnterior]++;
 	}
 
 	# Contador de emoticon por interlocutor, que precisa identificar emoticons tipo EMOJI e escritos usando ':', ';', ')', etc
- 
+
 
 
 	$indiceAnterior = $indice;
 	$dataMsgAnterior = $dataMsgAtual;
 }
+	my $media1 = $qtdMsg[0]/$qtdBlocosMsg[0];
+	my $media2 = $qtdMsg[1]/$qtdBlocosMsg[1];
+ 	print"$interlocutor1: iniciou - $qtdVezesIniciouConversa[0]\n  qtdmsg - $qtdMsg[0]\n qtdpalavras - $qtdPalavras[0]\n blocos - $qtdBlocosMsg[0]\n";
+ 	print"media mensagens/bloco $media1\n"; 
+ 	print"$interlocutor2: iniciou - $qtdVezesIniciouConversa[1]\n  qtdmsg - $qtdMsg[1]\n qtdpalavras - $qtdPalavras[1]\n palavrasbloco - $qtdBlocosMsg[1]\n";
+ 	print"media mensagens/bloco $media2\n";
