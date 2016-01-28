@@ -29,11 +29,13 @@ use Cwd  qw(abs_path);
 use lib dirname(dirname abs_path $0) . '/lib';
 
 # Inclusão dos módulos do código perl
-use bibliotecas::contadorEmoticons qw(contaEmoticons);
-use bibliotecas::tratamentoLinhaTexto qw(trataLinhaTexto);
+use bibliotecas::contadorEmoticons;
 
+# Declaração das constantes do programa (embora declaradas como variáveis)
 
 $HORAS_MIN = 10; # Número de horas para ser considerado uma nova conversa 
+$FORMAT = '%m/%d/%Y, %H:%M '; # Constante utilizada na formatação da hora para calcular a diferença
+
 
 # Declaração das variáveis globais que serão utilizadas para o cálculo das saídas do programa
 # Cada array guarda uma variável para cada interlocutor
@@ -58,17 +60,27 @@ while (my $linha = <$arquivo>) {
 	# Remove newLine character
 	chomp($linha);
 
-	# Pula linhas vazias ou que não comecem com data para evitar erros (ocorrência muito baixa, pode ser desprezada)
-	while (($linha =~ /^$/) or ($linha !~ /^\d\d\/\d\d\/\d\d\d\d/)) {
-		$linha = <$arquivo>;
-	}
+	# Pula linhas vazias para evitar erros
+	$linha =~ /^$/ and next;
 
-	my ($dataMsgAtual, $interlocutorAtual, $msgAtual) = trataLinhaTexto($linha);
+	# VERIFICA SE A LINHA COMEÇA COM DATA. SE NÃO COMEÇA, SOMA A QUANTIDADE DE PALAVRAS AO INTERLOCUTOR ANTERIOR
+
+	# ============================== DECLARAÇÃO DAS VARIÁVEIS DA MENSAGEM ATUAL =====================================
+
+	# Separa a linha em duas partes, sendo uma a que contém a data em texto, e outra contendo o restante
+	my ($dataMsgAtual, $resto) = split /[-](.*)/, $linha;
 
 	# Inicializa a dataMsgAnterior para o caso da primeira mensagem
 	if (!$dataMsgAnterior) {
 		$dataMsgAnterior = $dataMsgAtual;
 	}
+
+	# Separa o resto da linha em nome do interlocutor atual e mensagem
+	my ($interlocutorAtual, $msgAtual) = split /[:](.*)/, $resto;
+
+	# Remove o primeiro caracter (espaço) das strings
+	$interlocutorAtual =~ s/.//;
+	$msgAtual =~ s/.//;
 
 	# Declara o interlocutor1 e interlocutor2 se não estiverem declarados ainda, colocando o anterior como sendo o próprio atual
 	if (!$interlocutor1) {
@@ -88,8 +100,10 @@ while (my $linha = <$arquivo>) {
 		$indice = 1;	
 	}
 
+	# ========================== FIM DA DECLARAÇÃO DAS VARIÁVEIS DA MENSAGEM ATUAL ==================================
+
 	# Verificação de diferença de data para incrementar quem começa a nova conversa
-	my $diferencaDataEmHoras = ($dataMsgAtual - $dataMsgAnterior)/3600;
+	my $diferencaDataEmHoras = (Time::Piece->strptime($dataMsgAtual, $FORMAT) - Time::Piece->strptime($dataMsgAnterior, $FORMAT))/3600;
 	
 	if ($diferencaDataEmHoras > $HORAS_MIN) {
 		$qtdVezesIniciouConversa[$indice]++;
@@ -107,20 +121,17 @@ while (my $linha = <$arquivo>) {
 		$qtdBlocosMsg[$indiceAnterior]++;
 	}
 
-	# Contador de emoticon por interlocutor
+	# Contador de emoticon por interlocutor, que precisa identificar emoticons tipo EMOJI e escritos usando ':', ';', ')', etc
 	$qtdEmoticons[$indice] += contaEmoticons($msgAtual);
 
 
 	$indiceAnterior = $indice;
 	$dataMsgAnterior = $dataMsgAtual;
 }
-
-close($arquivo) or die "Couldn't close file properly";
-
-my $media1 = $qtdMsg[0]/$qtdBlocosMsg[0];
-my $media2 = $qtdMsg[1]/$qtdBlocosMsg[1];
-	
-print"\n $interlocutor1:\n\tiniciou: $qtdVezesIniciouConversa[0]\n\tqtdmsg: $qtdMsg[0]\n\tqtdpalavras: $qtdPalavras[0]\n\tqtdemoticons: $qtdEmoticons[0]\n\tqtdblocos: $qtdBlocosMsg[0]\n";
-say sprintf(" Media de mensagens/bloco = %.1f\n", $media1);
-print" $interlocutor2:\n\tiniciou: $qtdVezesIniciouConversa[1]\n\tqtdmsg: $qtdMsg[1]\n\tqtdpalavras: $qtdPalavras[1]\n\tqtdemoticons: $qtdEmoticons[1]\n\tqtdblocos: $qtdBlocosMsg[1]\n";
-say sprintf(" Media de mensagens/bloco = %.1f\n", $media2);
+	my $media1 = $qtdMsg[0]/$qtdBlocosMsg[0];
+	my $media2 = $qtdMsg[1]/$qtdBlocosMsg[1];
+ 	
+ 	print"\n $interlocutor1:\n\tiniciou: $qtdVezesIniciouConversa[0]\n\tqtdmsg: $qtdMsg[0]\n\tqtdpalavras: $qtdPalavras[0]\n\tqtdblocos: $qtdBlocosMsg[0]\n";
+ 	say sprintf(" Media de mensagens/bloco = %.1f\n", $media1);
+ 	print" $interlocutor2:\n\tiniciou: $qtdVezesIniciouConversa[1]\n\tqtdmsg: $qtdMsg[1]\n\tqtdpalavras: $qtdPalavras[1]\n\tqtdblocos: $qtdBlocosMsg[1]\n";
+	say sprintf(" Media de mensagens/bloco = %.1f\n", $media2);
