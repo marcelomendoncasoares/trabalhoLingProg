@@ -23,6 +23,15 @@ use 5.010; # Para habilitar a função usada da biblioteca Time::Piece
 use warnings;
 use Time::Piece;
 
+# Habilita a inclusão do diretório atual como caminho '/lib' para a busca das bibliotecas locais
+use File::Basename qw(dirname);
+use Cwd  qw(abs_path);
+use lib dirname(dirname abs_path $0) . '/lib';
+
+# Inclusão dos módulos do código perl
+use bibliotecas::contadorEmoticons;
+
+
 # Declaração das variáveis globais que serão utilizadas para o cálculo das saídas do programa
 # Cada array guarda uma variável para cada interlocutor
 
