@@ -1,7 +1,7 @@
 use warnings;
 use POSIX; # Para usar a função 'ceil'
 
-my $linha = "05/16/2015, 09:59 - Camilla Matias de Azevedo: ã 😵      😱 õ Á  À Í @ # 😁 ! ; : ) () ° / ? \\ - _ Ó É Ú Õ Ã ç ~ ^ Ç Eu perdi ª § º😊 hora de ir pro curso do IEG 😭😭😭 - \$ \% \* \& \@ \! com hífen e á à é ó óóóó ü : dois pontos";
+my $linha = "05/16/2015, 09:59 - Camilla Matias de Azevedo: ã 😵      😱 õ Á  À Í @ # 😁 ! ;( .) :) () ° / ? \\ - _ Ó É Ú Õ Ã ç ~ ^ Ç Eu perdi ª § º😊 hora de ir pro curso do IEG 😭😭😭 - \$ \% \* \& \@ \! com hífen e á à é ó óóóó ü : dois pontos";
 
 # A adição do (.*) após o símbolo é para que seja capturado apenas o primeiro '-'
 my ($dataMsgAtualTexto, $resto) = split(/[-](.*)/, $linha);

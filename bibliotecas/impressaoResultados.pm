@@ -21,14 +21,15 @@ our @EXPORT_OK = qw(imprimeResultados);
 
 sub imprimeResultados {
 
-	my ($interlocutor1, $interlocutor2, $qtdVezesIniciouConversa, $qtdMsg, $qtdPalavras, $qtdEmoticons, $qtdBlocosMsg) = @_;
+	my ($interlocutor1, $interlocutor2, $qtdVezesIniciouConversa, $qtdMsg, $qtdPalavras, $qtdEmoticonsTexto, $qtdEmoticonsEmoji, $qtdBlocosMsg) = @_;
 	my @interlocutor = ($interlocutor1, $interlocutor2);
 
 	foreach (0,1) {
 		print"\n $interlocutor[$_]:\n\tIniciou: @$qtdVezesIniciouConversa[$_] conversas\n";
 		print "\tEnviou: @$qtdMsg[$_] mensagens\n";
 		print "\tEscreveu: @$qtdPalavras[$_] palavras\n";
-		print "\tInseriu: @$qtdEmoticons[$_] emoticons\n";
+		print "\tInseriu: @$qtdEmoticonsTexto[$_] emoticons em texto\n";
+		print "\tInseriu: @$qtdEmoticonsEmoji[$_] emojis\n";
 		say sprintf(" Media de mensagens/vez = %.1f\n", @$qtdMsg[$_]/@$qtdBlocosMsg[$_]);	
 	}
 

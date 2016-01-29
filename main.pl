@@ -38,7 +38,8 @@ $HORAS_MIN = 10; # Número de horas para ser considerado uma nova conversa
 $interlocutor1 = "";
 $interlocutor2 = "";
 @qtdPalavras = (0, 0);
-@qtdEmoticons = (0, 0);
+@qtdEmoticonsTexto = (0, 0);
+@qtdEmoticonsEmoji = (0, 0);
 @qtdMsg = (0, 0);
 @qtdBlocosMsg = (0, 0); # Blocos de mensagens ininterruptos
 @qtdVezesIniciouConversa = (0, 0);
@@ -107,7 +108,10 @@ while (my $linha = <$arquivo>) {
 	}
 
 	# Contador de emoticon por interlocutor
-	$qtdEmoticons[$indice] += contaEmoticons($msgAtual);
+	my ($temp1, $temp2) = contaEmoticons($msgAtual);
+
+	$qtdEmoticonsTexto[$indice] += $temp1;
+	$qtdEmoticonsEmoji[$indice] += $temp2;
 
 	$indiceAnterior = $indice;
 	$dataMsgAnterior = $dataMsgAtual;
@@ -115,4 +119,4 @@ while (my $linha = <$arquivo>) {
 
 close($arquivo) or die "Couldn't close file properly";
 
-imprimeResultados($interlocutor1, $interlocutor2, \@qtdVezesIniciouConversa, \@qtdMsg, \@qtdPalavras, \@qtdEmoticons, \@qtdBlocosMsg);
+imprimeResultados($interlocutor1, $interlocutor2, \@qtdVezesIniciouConversa, \@qtdMsg, \@qtdPalavras, \@qtdEmoticonsTexto, \@qtdEmoticonsEmoji, \@qtdBlocosMsg);
