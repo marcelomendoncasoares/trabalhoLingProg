@@ -58,12 +58,18 @@ while (my $linha = <$arquivo>) {
 	# Remove newLine character
 	chomp($linha);
 
-	# Pula linhas vazias ou que não comecem com data para evitar erros (ocorrência muito baixa, pode ser desprezada)
-	while (($linha =~ /^$/) or ($linha !~ /^\d\d\/\d\d\/\d\d\d\d/)) {
+	# Pula linhas vazias 
+	while ($linha =~ /^$/) {
 		$linha = <$arquivo>;
 	}
 
-	my ($dataMsgAtual, $interlocutorAtual, $msgAtual) = trataLinhaTexto($linha);
+	# Se a linha não começar com data, apenas adiciona as palavras ao mesmo interlocutor
+	if ($linha =~ /^\d\d\/\d\d\/\d\d\d\d/) {
+		($dataMsgAtual, $interlocutorAtual, $msgAtual) = trataLinhaTexto($linha);
+	}
+	else {
+		$msgAtual = $linha;
+	}
 
 	# Inicializa a dataMsgAnterior para o caso da primeira mensagem
 	if (!$dataMsgAnterior) {
@@ -99,7 +105,7 @@ while (my $linha = <$arquivo>) {
 	$qtdMsg[$indice]++;
 
 	# Conta a quantidade de palavras na mensagem e incrementa no contador do interlocutorAtual
-	my @msgAtualArrayPalavras = split /[\s]+/, $msgAtual;
+	my @msgAtualArrayPalavras = split(/[\s]+/, $msgAtual);
 	$qtdPalavras[$indice] += scalar(@msgAtualArrayPalavras);
 
 	# Contador de blocos de mensagens ininterruptos (conta +1 para o interlocutor anterior sempre que mudar de interlocutor)	
