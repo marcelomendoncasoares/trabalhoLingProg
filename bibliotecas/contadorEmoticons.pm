@@ -24,7 +24,7 @@ sub contaEmoticons {
   	
   	# Conta emoticos escritos em forma de texto
   	my $contadorEmoticonsTexto = 0;
-  	my @arrayEmoticonsText = (":)", "(:", "):", ":(", ";)", ":D", ":d", ":p", ";p", ";P", " XD", ":\\", ":/", "=)", "(=", "=(", ")=", "=D", "=p", "=P", ":*", "*:", ";*");
+  	my @arrayEmoticonsText = (":)", "(:", "):", ":(", ";)", ":D", ":d", ":p", ";p", ";P", " XD", ":\\", ":/", "=)", "(=", "=(", ")=", "=D", "=p", "=P", ":*", "*:", ";*", "=*", "*=");
 
   	foreach (@arrayEmoticonsText) {
   		if ($msgAtual =~ /\Q$_\E/g) {
