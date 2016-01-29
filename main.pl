@@ -16,7 +16,7 @@
 # 
 
 use 5.010; # Para habilitar a função usada da biblioteca Time::Piece
-
+use strict;
 use warnings;
 use Time::Piece;
 
@@ -30,27 +30,33 @@ use bibliotecas::contadorEmoticons qw(contaEmoticons);
 use bibliotecas::tratamentoLinhaTexto qw(trataLinhaTexto);
 use bibliotecas::impressaoResultados qw(imprimeResultados);
 
-$HORAS_MIN = 10; # Número de horas para ser considerado uma nova conversa 
+my $HORAS_MIN = 10; # Número de horas para ser considerado uma nova conversa 
 
 # Declaração das variáveis globais que serão utilizadas para o cálculo das saídas do programa
 # Cada array guarda uma variável para cada interlocutor
 
-$interlocutor1 = "";
-$interlocutor2 = "";
-@qtdPalavras = (0, 0);
-@qtdEmoticonsTexto = (0, 0);
-@qtdEmoticonsEmoji = (0, 0);
-@qtdMsg = (0, 0);
-@qtdBlocosMsg = (0, 0); # Blocos de mensagens ininterruptos
-@qtdVezesIniciouConversa = (0, 0);
+my $interlocutor1 = "";
+my $interlocutor2 = "";
+my @qtdPalavras = (0, 0);
+my @qtdEmoticonsTexto = (0, 0);
+my @qtdEmoticonsEmoji = (0, 0);
+my @qtdMsg = (0, 0);
+my @qtdBlocosMsg = (0, 0); # Blocos de mensagens ininterruptos
+my @qtdVezesIniciouConversa = (0, 0);
 
-# Pega o nome do arquivo como argumento passado ao programa em Perl
-$nomeArquivo = $ARGV[0];
 
 # Se não for passado o nome do arquivo, encerra o programa com o erro equivalente
 ($ARGV[0]) or die "--ERRO: não foi passado nome de arquivo texto como argumento.\n\n O programa deve receber o nome de um arquivo texto de conversa do whatsapp entre duas pessoas como argumento.\n";
 
+# Pega o nome do arquivo como argumento passado ao programa em Perl
+my $nomeArquivo = $ARGV[0];
+
+# Verifica se o arquivo é vazio antes de abrir
+!(-z $nomeArquivo) or die "--ERRO: o arquivo está vazio.\n\n O programa deve receber o nome de um arquivo texto de conversa do whatsapp entre duas pessoas como argumento.\n";
 open(my $arquivo, "<", $nomeArquivo) or die "Couldn't open file , $!";
+
+# Declaração das variáveis utilizadas no loop while de varredura do arquivo
+my ($dataMsgAnterior, $dataMsgAtual, $msgAtual, $interlocutorAtual, $indice, $indiceAnterior);
 
 # Processa o arquivo linha a linha, sabendo que cada linha corresponde a uma mensagem
 while (my $linha = <$arquivo>) {
@@ -68,6 +74,7 @@ while (my $linha = <$arquivo>) {
 		($dataMsgAtual, $interlocutorAtual, $msgAtual) = trataLinhaTexto($linha);
 	}
 	else {
+		# Não precisa do 'our' porque nunca será uma declaração: o arquvo nunca terá a primeria linha não começando com data.
 		$msgAtual = $linha;
 	}
 
