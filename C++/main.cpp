@@ -8,31 +8,37 @@ int main () {
 
 int opcao;
 
+	Registro registro;
 	do
 	{
 			
-		Registro registro;
+
 		string name, profissao, nomeArquivo;
 		
-
-		cout << "Programa de analise de chat\n\n\nSelecione uma das opcoes abaixo\n\n1: inserir conversa 	2: excluir conversa	3: analisar" << endl;
+		cout << "Programa de analise de chat\n\nSelecione uma das opcoes abaixo\n"<<endl;
+		cout<<"1: inserir conversa 	2: excluir conversa	 3: exibir analise  4: gerar relatorio " << endl;
 		cin >> opcao;
 
-	
+		switch(opcao){
 
-		if(opcao== 1)
-			{
+			case 1:
 			registro.inserirRegistro();
-			registro.inserirRegistro();
-			registro.inserirRegistro();	
-		}
-		
-			
-	
-		if(opcao== 2){
+			break;
+
+			case 2:
 			registro.excluir();
-			
+			break;
+
+			case 3:
+			registro.exibirAnalise();
+			break;
+
+			case 4:
+			registro.gerarRelatorio(0);
+			break;
 		}
+
+
 
 
 	} while(opcao!=0);

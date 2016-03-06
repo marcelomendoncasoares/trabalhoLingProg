@@ -13,6 +13,7 @@ class Conversa {
 		void inserir();
 		string getInterlocutora ();
 		string getInterlocutor ();
+		void analisarConversa();
 
 	private:
 		string arquivo, interlocutor, interlocutora;
@@ -28,7 +29,9 @@ class Registro {
 		void inserirRegistro ();
 		void excluir();
 		void exibirConversas();
-	//	void analisarConversas();
+		void exibirAnalise();
+		void gerarRelatorio( int );
+
 
 
 	private:
