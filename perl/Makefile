@@ -39,3 +39,4 @@ clean:
 
 # Linha de comando que compila: g++ -O2 -I/usr/local/include -I/usr/lib/perl/5.14/CORE -L/usr/lib/perl/5.14/CORE -o programm perlIntegrer.cpp -lperl -lm
 # Linha de comando usada para gerar o código de carregamento dinâmico: perl -MExtUtils::Embed -e xsinit -- -o perlxsi.c
+Status 
