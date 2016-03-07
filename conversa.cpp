@@ -6,10 +6,7 @@
 
 
 
-Conversa::Conversa (){
-	inserir(); 
-
-}
+Conversa::Conversa (string a) : arquivo(a) {};
 
 void Conversa::inserir (){
 	string nomeArquivo;
@@ -33,9 +30,16 @@ int Conversa::getQtdPalavras () {return qtdPalavras[1];}
 int Registro::qtd(){return conversas.at(0)->getQtdPalavras();}
 
 void Registro::inserirRegistro () {
-	string sn;
 	
-	conversas.push_back (new Conversa);
+	string sn, nomeArquivo;
+	cout << "Insira o nome do arquivo da conversa: " << endl;
+	cin >> nomeArquivo;
+	
+	Conversa *conversaTeste = new Conversa(nomeArquivo);
+
+	conversas.push_back (conversaTeste);
+	teste(nomeArquivo, conversaTeste);
+
 	cout<<"qtdpalavras: "<<conversas.at(0)->getQtdPalavras()<<endl;
 	cout<<"Deseja gerar um relatorio?\n S-sim	N-nao"<<endl;
 	cin>> sn;

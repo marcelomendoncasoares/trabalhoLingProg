@@ -8,10 +8,10 @@ using namespace std;
 
 class Conversa {
 
-	friend void teste(string);
+	friend void teste(string, Conversa &);
 
 	public:
-		Conversa();
+		Conversa(string);
 		void inserir();
 		string getInterlocutora ();
 		string getInterlocutor ();

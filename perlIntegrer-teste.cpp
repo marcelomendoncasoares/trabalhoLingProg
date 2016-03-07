@@ -50,8 +50,8 @@ void teste(string nomeArquivo, Conversa &conv) {
 	
 	//cout << "Existem " << numberElemntsOfStack << " elementos na pilha." << endl;
 
-	Conversa::interlocutor1 = POPp;
-	Conversa::interlocutor2 = POPp;
+	string interlocutor1 = POPp;
+	string interlocutor2 = POPp;
 	
 	// Os resultados são gravados no array segundo a seguinte ordem:
 	// qtdVezesIniciouConversa, qtdMsg, qtdPalavras, qtdEmoticonsTexto, qtdEmoticonsEmoji, qtdBlocosMsg.
@@ -131,9 +131,6 @@ int opcao;
 
 			case 1:
 			registro.inserirRegistro();
-				nomeArquivo = "./conversas/conversaAilma.txt";
-				teste(nomeArquivo);
-				cout<<"qtdpalavras: "<<registro.qtd()<<endl;
 			break;
 
 			case 2:
